@@ -25,16 +25,15 @@ jobs:
     - name: Run Pylint analysis
       id: pylint
       run: |
-        pylint --output-format=colorized \
-               --reports=yes \
-               --score=yes \
-               $(git ls-files '*.py') > pylint_report.txt || true
-        
-        SCORE=$(grep "Your code has been rated at" pylint_report.txt | grep -oE "[0-9]+\.[0-9]+/10")
-        echo "Pylint Score: $SCORE"
-        echo "score=$SCORE" >> $GITHUB_OUTPUT
-        
-        cat pylint_report.txt
+          find . -name "*.py" -print0 | xargs -0 pylint \
+            --output-format=colorized \
+            --reports=yes \
+            --score=yes \
+            > pylint_report.txt || echo "::warning::Pylint completed with warnings"
+          
+          SCORE=$(grep "Your code has been rated at" pylint_report.txt | grep -oE "[0-9]+\.[0-9]+/10")
+          echo "score=${SCORE:-0}" >> $GITHUB_OUTPUT
+          cat pylint_report.txt
 
     - name: Upload Pylint Report
       uses: actions/upload-artifact@v4
