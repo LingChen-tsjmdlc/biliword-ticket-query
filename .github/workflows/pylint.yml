@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -20,37 +20,36 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-        pip install -r requirements.txt  # 安装项目依赖
+        pip install -r requirements.txt
 
-    - name: Run Pylint with scoring
+    - name: Run Pylint analysis
+      id: pylint
       run: |
-        echo "Pylint analysis started..."
-        pylint --output-format=colorized --reports=yes --score=yes $(git ls-files '*.py') > pylint_report.txt || true
+        pylint --output-format=colorized \
+               --reports=yes \
+               --score=yes \
+               $(git ls-files '*.py') > pylint_report.txt || true
         
-        # 提取评分并设置输出变量
         SCORE=$(grep "Your code has been rated at" pylint_report.txt | grep -oE "[0-9]+\.[0-9]+/10")
         echo "Pylint Score: $SCORE"
         echo "score=$SCORE" >> $GITHUB_OUTPUT
         
-        # 上传完整报告作为artifact
-        echo "Pylint Report:"
         cat pylint_report.txt
 
     - name: Upload Pylint Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: pylint-report-${{ matrix.python-version }}
         path: pylint_report.txt
+        retention-days: 3  # 设置报告保留天数
 
     - name: Check score threshold
       run: |
         SCORE=$(echo "${{ steps.pylint.outputs.score }}" | cut -d'/' -f1)
-        MIN_SCORE=6.0  # 设置最低合格分数
+        MIN_SCORE=8.0
         
         if (( $(echo "$SCORE < $MIN_SCORE" | bc -l) )); then
           echo "::error::Pylint score $SCORE is below minimum required $MIN_SCORE"
           exit 1
-        else
-          echo "Pylint score $SCORE meets requirements"
         fi
