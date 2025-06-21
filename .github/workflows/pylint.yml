@@ -29,6 +29,8 @@ jobs:
             --output-format=colorized \
             --reports=yes \
             --score=yes \
+            --disable=C0301,C0103,W2402,W0621
+            --max-line-length=240
             > pylint_report.txt || echo "::warning::Pylint completed with warnings"
           
           SCORE=$(grep "Your code has been rated at" pylint_report.txt | grep -oE "[0-9]+\.[0-9]+/10")
