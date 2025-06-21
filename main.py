@@ -66,7 +66,7 @@ def fetch_ticket_status(api_url, api_headers):
 
 def get_user_settings():
     """获取用户配置"""
-    user_config = {
+    user_config_defalut = {
         'project_id': '102194',  # 默认项目ID
         'query_interval': 3,  # 默认查询间隔(秒)
         'retry_interval': 5,  # 失败后重试间隔(秒)
@@ -78,19 +78,19 @@ def get_user_settings():
         }
     }
     print(f"{Fore.CYAN}=== B站票务查询工具配置 ===")
-    user_config['project_id'] = input(f"请输入项目ID(默认:{user_config['project_id']}): ") or user_config['project_id']
+    user_config_defalut['project_id'] = input(f"请输入项目ID(默认:{user_config_defalut['project_id']}): ") or user_config_defalut['project_id']
 
     try:
-        interval = input(f"请输入查询间隔(秒，默认:{user_config['query_interval']}): ")
-        user_config['query_interval'] = int(interval) if interval else user_config['query_interval']
+        interval = input(f"请输入查询间隔(秒，默认:{user_config_defalut['query_interval']}): ")
+        user_config_defalut['query_interval'] = int(interval) if interval else user_config_defalut['query_interval']
     except ValueError:
         print(Fore.RED + "无效输入，使用默认值" + Style.RESET_ALL)
 
     # 用户选择是否开启清屏
     clear_input = input("是否开启清屏功能？(y/n，默认:n): ").lower()
-    user_config['enable_clear'] = clear_input == 'y'
+    user_config_defalut['enable_clear'] = clear_input == 'y'
 
-    return user_config
+    return user_config_defalut
 
 
 def main(config):
@@ -120,5 +120,5 @@ def main(config):
 
 if __name__ == "__main__":
     print("当前版本号:Ver_0.0.2。")
-    config = get_user_settings()
-    main(config)
+    user_config = get_user_settings()
+    main(user_config)
