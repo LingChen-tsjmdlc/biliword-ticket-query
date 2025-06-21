@@ -78,11 +78,15 @@ def get_user_settings():
         }
     }
     print(f"{Fore.CYAN}=== B站票务查询工具配置 ===")
-    user_config_defalut['project_id'] = input(f"请输入项目ID(默认:{user_config_defalut['project_id']}): ") or user_config_defalut['project_id']
+    user_config_defalut['project_id'] = \
+        input(f"请输入项目ID(默认:{user_config_defalut['project_id']}): ")\
+        or user_config_defalut['project_id']
 
     try:
-        interval = input(f"请输入查询间隔(秒，默认:{user_config_defalut['query_interval']}): ")
-        user_config_defalut['query_interval'] = int(interval) if interval else user_config_defalut['query_interval']
+        interval = input(f"请输入查询间隔"
+                         f"(秒，默认:{user_config_defalut['query_interval']}): ")
+        user_config_defalut['query_interval'] = \
+            int(interval) if interval else user_config_defalut['query_interval']
     except ValueError:
         print(Fore.RED + "无效输入，使用默认值" + Style.RESET_ALL)
 
@@ -100,7 +104,8 @@ def main(config):
         clear_screen(True)  # 初始清屏（仅当用户启用时）
 
     print(f"{Fore.CYAN}=== B站票务查询工具 ===")
-    api_url = f"https://show.bilibili.com/api/ticket/project/getV2?version=134&id={config['project_id']}"
+    api_url = f"https://show.bilibili.com/api/ticket/project/getV2?" \
+              f"version=134&id={config['project_id']}"
 
     try:
         while True:

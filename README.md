@@ -32,6 +32,8 @@ conda activate bw-ticket-query  # 激活环境
 3. 安装依赖
 
 ```bash
+pip install -r requirements.txt
+# 或换源安装
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
@@ -45,10 +47,12 @@ python run main.py
 
 ```bash
 # 安装 pyinstaller 包
+pip install pyinstaller
+# 或换源安装
 pip install pyinstaller -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ```bash
 # 打包为 exe，exe文件在 `.\dist` 目录下
-pyinstaller --onefile '.\bw2025 余票查询.py'
+pyinstaller --onefile '.\main.py'
 ```
