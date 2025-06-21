@@ -2,7 +2,6 @@ import requests
 import time
 from datetime import datetime
 from colorama import Fore, Style, init
-import os
 
 
 def clear_screen(enable=True):
