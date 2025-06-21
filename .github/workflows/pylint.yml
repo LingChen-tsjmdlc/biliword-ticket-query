@@ -9,49 +9,46 @@ jobs:
       matrix:
         python-version: ["3.8"]
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          pip install -r requirements.txt
 
-    - name: Run Pylint analysis
-      id: pylint
-      run: |
-        find . -name "*.py" -print0 | xargs -0 pylint \
-          --output-format=colorized \
-          --reports=yes \
-          --score=yes \
-          --exit-zero \  # 即使有警告也返回0
-          --disable=all \  # 禁用所有检查
-          --enable=error \  # 只保留错误检查
-          > pylint_report.txt
-      
-          SCORE=$(grep "Your code has been rated at" pylint_report.txt | grep -oE "[0-9]+\.[0-9]+/10" || echo "10.00/10")
-          echo "score=${SCORE:-10.00/10}" >> $GITHUB_OUTPUT
+      - name: Run Pylint analysis
+        id: pylint
+        run: |
+          find . -name "*.py" -print0 | xargs -0 pylint \
+            --output-format=colorized \
+            --reports=yes \
+            --score=yes \
+            > pylint_report.txt || echo "::warning::Pylint completed with warnings"
+
+          SCORE=$(grep "Your code has been rated at" pylint_report.txt | grep -oE "[0-9]+\.[0-9]+/10")
+          echo "score=${SCORE:-0}" >> $GITHUB_OUTPUT
           cat pylint_report.txt
 
-    - name: Upload Pylint Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: pylint-report-${{ matrix.python-version }}
-        path: pylint_report.txt
-        retention-days: 3  # 设置报告保留天数
+      - name: Upload Pylint Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pylint-report-${{ matrix.python-version }}
+          path: pylint_report.txt
+          retention-days: 3 # 设置报告保留天数
 
-    - name: Check score threshold
-      run: |
-        SCORE=$(echo "${{ steps.pylint.outputs.score }}" | cut -d'/' -f1)
-        MIN_SCORE=8.0
-        
-        if (( $(echo "$SCORE < $MIN_SCORE" | bc -l) )); then
-          echo "::error::Pylint score $SCORE is below minimum required $MIN_SCORE"
-          exit 1
-        fi
+      - name: Check score threshold
+        run: |
+          SCORE=$(echo "${{ steps.pylint.outputs.score }}" | cut -d'/' -f1)
+          MIN_SCORE=8.0
+
+          if (( $(echo "$SCORE < $MIN_SCORE" | bc -l) )); then
+            echo "::error::Pylint score $SCORE is below minimum required $MIN_SCORE"
+            exit 1
+          fi
