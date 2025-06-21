@@ -106,7 +106,8 @@ def main(config):
             clear_screen(config['enable_clear'])  # 根据用户设置决定是否清屏
 
     except KeyboardInterrupt:
-        print(f"\n{Fore.CYAN}程序已手动终止{Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN}程序已手动终止{Style.RESET_ALL},正在关闭程序。")
+        time.sleep(1.5)  # 添加1.5秒延迟
 
 
 if __name__ == "__main__":
